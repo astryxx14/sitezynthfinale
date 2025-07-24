@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZYNTH ESPORT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: black;
+      color: #ffffff;
+      line-height: 1.8;
+      overflow-x: hidden;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      background: transparent;
+    }
+    /* Animation fond vague orange/blanc */
+    #backgroundAnimation {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+    /* Logo Zynth au-dessus des vagues */
+    #logoZynth {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 180px;
+      max-height: 180px;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      opacity: 0.85;
+    }
+    header {
+      background: rgba(255,165,0,0.15);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      width: 100%; top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+    }
+    header h1 {
+      color: #ff7a00;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 1.5px;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 18px;
+    }
+    nav li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background 0.3s;
+      font-size: 1rem;
+    }
+    nav li a:hover,
+    nav li a.active {
+      background-color: #ff7a00;
+      color: #000;
+    }
+    .join-btn {
+      background-color: #ff7a00;
+      color: #000;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+    }
+    main {
+      padding-top: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 120px);
+      flex-direction: column;
+    }
+    section {
+      display: none;
+      margin: 80px auto;
+      max-width: 900px;
+      width: 95%;
+      background: rgba(20, 20, 40, 0.9);
+      box-shadow: 0 0 40px #ff7a00;
+      border-radius: 15px;
+      padding: 60px 40px;
+      font-family: 'Montserrat', sans-serif;
+      text-align: center;
+      font-size: 1.2rem;
+      position: relative;
+      min-height: 300px;
+    }
+    section.active { display: block; }
+    h2 {
+      color: #ff7a00;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    /* Slider container */
+    .slider {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 60px 60px 60px;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+    .slide {
+      display: none;
+      color: #ddd;
+      font-size: 1.4rem;
+      min-height: 140px;
+      line-height: 1.5;
+    }
+    .slide.active {
+      display: block;
+    }
+    /* Flèches modernes */
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255 255 255 / 0.3);
+      border: none;
+      color: #ff7a00;
+      font-size: 2rem;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background 0.3s;
+      user-select: none;
+      z-index: 10;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 8px #ff7a00;
+    }
+    .arrow:hover {
+      background: rgba(255 255 255 / 0.6);
+    }
+    .arrow.left {
+      left: 12px;
+    }
+    .arrow.right {
+      right: 12px;
+    }
+    /* Points indicateurs */
+    .dots {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(255 255 255 / 0.4);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .dot.active {
+      background: #ff7a00;
+    }
+    /* Refonte onglet équipes */
+    #equipes > div {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    #equipes strong {
+      display: block;
+      margin-top: 18px;
+      font-weight: 700;
+      color: #ff7a00;
+      font-size: 1.1rem;
+    }
+    #equipes p {
+      margin: 6px 0 0 0;
+      color: #ddd;
+    }
+    #equipes em {
+      font-style: italic;
+      color: #ccc;
+    }
+    #equipes .role {
+      color: #ff7a00;
+      font-weight: 700;
+      display: inline-block;
+      margin-right: 10px;
+      min-width: 90px;
+    }
+    #equipes .player-list {
+      margin-bottom: 12px;
+    }
+    #equipes .coach {
+      margin-top: 20px;
+    }
+    #boutique .buy-button {
+      background-color: #ff7a00;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+      text-decoration: none;
+      font-size: 1.2rem;
+      display: inline-block;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+    #boutique .buy-button:hover {
+      background-color: #ff9a33;
+    }
+    footer {
+      position: fixed;
+      bottom: 0; width: 100%;
+      text-align: center;
+      padding: 18px 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #fff;
+      background: rgba(255 255 255 / 0.07);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="backgroundAnimation"></canvas>
+
+  <!-- Logo centré au-dessus des vagues -->
+  <img src="https://cdn.discordapp.com/attachments/1353393374748475504/1366346475939954718/Black_Red_Modern_Football_Logo_2_1.png?ex=68834f51&is=6881fdd1&hm=25ee33f1a58bd9d1e50fd9a5fd59864ae4755db3688b2fa48f13c8c22cd04e81" alt="Logo Zynth" id="logoZynth" />
+
+  <header>
+    <h1>ZYNTH</h1>
+    <nav>
+      <ul>
+        <li><a href="#accueil" class="active">Accueil</a></li>
+        <li><a href="#bio">Biographie</a></li>
+        <li><a href="#equipes">Équipes</a></li>
+        <li><a href="#partenaires">Partenaires</a></li>
+        <li><a href="#boutique">Boutique</a></li>
+      </ul>
+    </nav>
+    <a href="#join" class="join-btn">Nous rejoindre</a>
+  </header>
+
+  <main>
+    <!-- ACCUEIL SLIDER -->
+    <section id="accueil" class="active">
+      <h2>Bienvenue chez ZYNTH ESPORT</h2>
+      <div class="slider">
+        <div class="slide active">
+          <p>Une équipe passionnée dédiée à l’excellence et à la compétition.</p>
+        </div>
+        <div class="slide">
+          <p>Nous construisons des équipes fortes, prêtes à rivaliser au plus haut niveau.</p>
+        </div>
+        <div class="slide">
+          <p>Rejoignez-nous et vivez l’aventure esport avec une communauté soudée et ambitieuse.</p>
+        </div>
+      </div>
+      <button class="arrow left" aria-label="Slide précédente">&#10094;</button>
+      <button class="arrow right" aria-label="Slide suivante">&#10095;</button>
+      <div class="dots"></div>
+    </section>
+
+    <!-- BIOGRAPHIE -->
+    <section id="bio">
+      <h2>Biographie</h2>
+      <div class="slider">
+        <div class="slide active">
+          <p>Notre structure esport est née d’une passion commune pour la compétition et la performance. Avec une vision tournée vers l’avenir, nous avons pour ambition de développer et compléter nos équipes existantes tout en créant de nouvelles formations capables de rivaliser au plus haut niveau.</p>
+        </div>
+        <div class="slide">
+          <p>Notre priorité est d’offrir un encadrement de qualité en recrutant des coachs expérimentés, capables de guider nos joueurs vers l’excellence. Nous mettons un point d’honneur à faire progresser notre structure, nos joueurs et notre staff main dans la main, garantissant ainsi une évolution harmonieuse et continue.</p>
+        </div>
+        <div class="slide">
+          <p>Notre objectif est clair : nous lancer dans l’esport avec une base solide et une situation stable, nous assurant ainsi un développement pérenne et compétitif. Ensemble, nous bâtirons une structure qui marquera l’univers esportif. 🚀🎮</p>
+        </div>
+      </div>
+      <button class="arrow left" aria-label="Slide précédente">&#10094;</button>
+      <button class="arrow right" aria-label="Slide suivante">&#10095;</button>
+      <div class="dots"></div>
+    </section>
+
+    <!-- EQUIPES -->
+    <section id="equipes">
+      <h2>Nos Équipes</h2>
+      <div>
+        <strong>Rocket League</strong>
+        <p><span class="role">Joueurs :</span> Champion, Reve-Recuit, Warshiba, Biscotte</p>
+        <p><span class="role">Grand Champions :</span> Hyzz, Nayl, Saphir</p>
+        <p class="coach"><span class="role">Coach :</span> Minagriffe</p>
+      </div>
+      <div style="margin-top:40px;">
+        <strong>Valorant</strong>
+        <p><span class="role">Joueurs :</span> Tu Mer, Kyzey, Leo, Rifsy, Velpay, Skordry</p>
+        <p class="coach"><span class="role">Coach :</span> Riize</p>
+        <p><span class="role">Remplaçant :</span> Tenox</p>
+      </div>
+    </section>
+
+    <!-- PARTENAIRES -->
+    <section id="partenaires">
+      <h2>Partenaires</h2>
+      <ul style="list-style:none; color:#ddd; text-align:left; max-width: 500px; margin: 0 auto;">
+        <li>• <a href="https://www.razer.com/" target="_blank" style="color:#ff7a00; text-decoration:none;">Razer</a></li>
+        <li>• <a href="https://kapoli.fr/" target="_blank" style="color:#ff7a00; text-decoration:none;">Kapoli</a></li>
+        <li>• <a href="https://attackshark.com/?ref=hprvcbwb" target="_blank" style="color:#ff7a00; text-decoration:none;">Attackshark</a></li>
+        <li>• <a href="https://www.instant-gaming.com/en/partnership/?_gl=1*17jzg8a*_up*MQ..*_gs*MQ..&gclid=Cj0KCQjw097CBhDIARIsAJ3-nxee-YyyzCahppd9x8DMOuEYUhGf8XZMtA4KCNVgeACkVALynImXwAAaAsZeEALw_wcB" target="_blank" style="color:#ff7a00; text-decoration:none;">Instant Gaming</a></li>
+      </ul>
+    </section>
+
+    <!-- BOUTIQUE -->
+    <section id="boutique">
+      <h2>Boutique</h2>
+      <p>Découvrez notre sélection d’articles exclusifs ZYNTH pour supporter l’équipe et représenter fièrement vos couleurs.</p>
+      <a href="https://zynth-boutique.example.com" target="_blank" class="buy-button">Visitez la boutique</a>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 ZYNTH ESPORT - Tous droits réservés
+  </footer>
+
+  <script>
+    // Gestion des onglets
+    const navLinks = document.querySelectorAll('nav a');
+    const sections = document.querySelectorAll('main section');
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = link.getAttribute('href').substring(1);
+
+        // Activation onglet
+        navLinks.forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+
+        // Afficher section
+        sections.forEach(sec => {
+          if (sec.id === target) {
+            sec.classList.add('active');
+          } else {
+            sec.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    // Gestion slider multiple (Accueil et Biographie)
+    function setupSlider(sectionId) {
+      const section = document.getElementById(sectionId);
+      const slides = section.querySelectorAll('.slide');
+      const leftArrow = section.querySelector('.arrow.left');
+      const rightArrow = section.querySelector('.arrow.right');
+      const dotsContainer = section.querySelector('.dots');
+
+      let current = 0;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === index);
+        });
+        const dots = dotsContainer.querySelectorAll('.dot');
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      }
+
+      // Création des dots
+      slides.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => {
+          current = i;
+          showSlide(current);
+        });
+        dotsContainer.appendChild(dot);
+      });
+
+      leftArrow.addEventListener('click', () => {
+        current = (current - 1 + slides.length) % slides.length;
+        showSlide(current);
+      });
+      rightArrow.addEventListener('click', () => {
+        current = (current + 1) % slides.length;
+        showSlide(current);
+      });
+    }
+
+    setupSlider('accueil');
+    setupSlider('bio');
+
+    // Animation vague canvas
+
+    const canvas = document.getElementById('backgroundAnimation');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Wave {
+      constructor(amplitude, wavelength, speed, phase, color) {
+        this.amplitude = amplitude;
+        this.wavelength = wavelength;
+        this.speed = speed;
+        this.phase = phase;
+        this.color = color;
+      }
+      draw(time) {
+        ctx.beginPath();
+        ctx.moveTo(0, height * 0.75);
+        for(let x = 0; x < width; x++) {
+          const y = height * 0.75 + this.amplitude * Math.sin((x / this.wavelength * 2 * Math.PI) + this.phase + this.speed * time);
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    const waves = [
+      new Wave(32, width * 1.6, 0.00035, 0, 'rgba(255, 165, 0, 0.15)'),
+      new Wave(26, width * 2.2, 0.0002, Math.PI/2, 'rgba(255, 255, 255, 0.10)')
+    ];
+
+    function animate(time = 0) {
+      ctx.clearRect(0, 0, width, height);
+      waves.forEach(wave => wave.draw(time));
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
